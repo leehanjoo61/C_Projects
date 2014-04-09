@@ -1,0 +1,704 @@
+#Ikhlas Ahmed
+#ia787858
+#Chris
+#Lab: 10:30am - 11:30am
+
+		.data
+prompt:		.asciiz    	"Text? "
+error_string:	.asciiz    	"Error - String is empty."
+line:		.byte      	0:81
+new_line:	.asciiz 	"\n"
+		
+		.text
+		.globl main
+
+#main function	
+main:		la		$a0, prompt 		#prompt user for string
+		li		$v0, 4
+		syscall
+#Read the string
+		la		$a0, line		#read string
+		li		$a1, 81
+		li		$v0, 8
+		syscall
+
+
+#Check for empty string 
+		move		$10, $0			#set i = 0
+		addi		$11, $0, 81		#set n = 80
+
+		addi		$12, $0, 32		#set $12 = ' '
+		addi		$13, $0, 9		#set $13 = '\t'
+		addi		$14, $0, 10		#set $14 = '\n'
+
+		addi		$15, $0, 81		#size of array line
+		la		$16, line		#starting address of line
+		add 		$16, $16, $10		#put i in line
+		lbu		$17, 0($16)		#line[i]
+
+		addi		$18, $0, 1	 	#set flag = 1
+		move		$19, $v0		#int $18 = $v0		
+
+
+
+
+
+#int flag = 1;
+#for(int i = 0; i < n; i++)
+	#{
+	   #if(line[i] == ' ' || (line[i] == '\t') || (line[i] == '\n'))
+	    #{ }
+	   #else 
+	    #{
+	     #flag = 0;
+	    #}
+	#}
+	#if(flag == 1) { printf("line is empty"); }
+	#else          { call functions}
+
+
+
+loop1:		bgt		$10, $11, end_loop1	#i > n
+
+		beq		$17, $12, if		#if(line[i] == ' ')
+		beq		$17, $13, if		#if(line[i] == '\t')
+		#beq		$17, $14, if		#if(line[i] == '\n')
+		move		$18, $0			#else:  set flag = 0
+		j		end_if
+if:		j		end_if
+end_if:		
+
+		addi		$10, $10, 1		#i++
+		addi		$16, $16, 1		
+		lbu		$17, 0($16)
+		j		loop1
+end_loop1:						#end of for loop
+
+
+
+		addi		$9, $0, 1		# 1
+		beq		$18, $9, if2		#if(flag == 1)
+		jal		char_function		#procedure call
+		j		end_if2
+if2:		la		$a0, error_string	#print string
+		li		$v0, 4
+		syscall
+		la		$a0, new_line		#to print string
+		li		$v0, 4			
+		syscall	
+		j		end_if2
+end_if2:	
+			
+
+#Exit command 
+		li		$v0, 10			#Exit command
+		syscall
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#char_function
+#print char of list
+		.data
+char_prompt:	.asciiz		 "No. of non-whitespace character: "
+
+		.text
+char_function:	sw		$31, 0($sp)		#saving $31 on stack(push)
+		addi		$sp, $sp, -4
+
+		move		$10, $0			#set i = 0
+		addi		$11, $0, 81		#set n = 80
+
+		addi		$12, $0, 32		#set $12 = ' '
+		addi		$13, $0, 9		#set $13 = '\t'
+		addi		$14, $0, 10		#set $14 = '\n'
+
+		addi		$15, $0, 81		#size of array line
+		la		$16, line		#starting address of line
+		add 		$16, $16, $10		#put i in line
+		lbu		$17, 0($16)		#line[i]
+
+		addi		$18, $0, 1	 	#set flag = 1
+		move		$19, $v0		#user string
+		move		$20, $0			#count = 0
+
+	      #for(int i = 0; i < n; i++)
+		#{
+		   #if(line[i] != ' ' && (line[i] != ' ') && (line[i] != '\t'))
+			#{ count++; }
+		#}
+
+
+loop2:		bge		$10,$11,end_loop2	#i >= n
+
+		beq		$17, $12, end_if3		#if(line[i] != ' ')
+		beq		$17, $13, end_if3	 	#if(line[i] != '\t')
+		beq		$17, $14, end_loop2		#if(line[i] != '\n')
+		addi		$20, $20, 1			#count++
+		j		end_if3	
+end_if3:	
+
+		addi		$10, $10, 1		#i++
+		addi		$16, $16, 1		
+		lbu		$17, 0($16)
+		j		loop2
+end_loop2:
+	
+
+
+
+#print left_prompt
+		la		$a0, char_prompt 
+		li		$v0, 4			#to print string
+		syscall	
+#print count
+		move		$a0, $20
+		li		$v0, 1
+		syscall
+
+#print new_line
+		la		$a0, new_line		#to print string
+		li		$v0, 4			
+		syscall
+#procedure call, Stack, and return 		
+		jal	 	word_function		#new procedure call
+		lw		$31, 4($sp)		#restore $31 from stack(pop)
+		addi 		$sp, $sp, 4	
+		jr		$31			#return to main
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#word_function
+			.data
+word_prompt:		.asciiz "No. of words: "
+
+			.text
+word_function:		sw	$31, 0($sp)		#saving $31 on stack(push)
+			addi	$sp, $sp, -4
+
+			move	$10, $0			#set i = 0
+			addi	$11, $0, 80		#set n = 80
+
+			addi	$12, $0, 32		#set $12 = ' '
+			addi	$13, $0, 9		#set $13 = '\t'
+			addi	$14, $0, 10		#set $14 = '\n'
+
+			addi	$15, $0, 80		#size of array line
+			la	$16, line		#starting address of line
+			add 	$16, $16, $10		#put i in line
+			lbu	$17, 0($16)		#line[i]
+
+			addi	$18, $0, 1	 	#set flag = 1
+			move	$20, $19		#user string
+			move	$21, $0			#set count = 0
+
+
+
+	    	#for(int i = 0; i < n; i++)
+		#{
+		   #if(line[i] == ' ' || (line[i] == '\n') || (line[i] == '\t'))
+			#{ count++; }
+		#}
+loop3:			bge	$10,$11,end_loop3	#i >= n
+
+			beq	$17, $12, if4		#if(line[i] == ' ')
+			beq	$17, $13, if4	 	#if(line[i] == '\t')
+			beq	$17, $14, if4		#if(line[i] == '\n')
+			j	end_if4
+if4:			addi	$21, $21, 1		#count++
+end_if4:	
+
+			addi	$10, $10, 1		#i++
+			addi	$16, $16, 1		
+			lbu	$17, 0($16)
+			j	loop3
+end_loop3:
+	
+
+
+#print left_prompt
+			la	$a0, word_prompt 
+			li	$v0, 4			#to print string
+			syscall	
+#print count
+			move	$a0, $21		#to print int
+			li	$v0, 1			
+			syscall
+#print new_line
+		la		$a0, new_line		#to print string
+		li		$v0, 4			
+		syscall
+#Procedure call and Stack
+		jal	 	max_char_function	#new procedure call
+		lw		$31, 4($sp)		#restore $31 from stack(pop)
+		addi 		$sp, $sp, 4	
+		jr		$31
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			.data		
+max_char_prompt:	.asciiz "Maximum length of a word: "
+
+			.text
+max_char_function:	sw	$31, 0($sp)		#saving $31 on stack(push)
+			addi	$sp, $sp, -4
+
+			move	$10, $0			#set i = 0
+			addi	$11, $0, 81		#set n = 80
+
+			addi	$12, $0, 32		#set $12 = ' '
+			addi	$13, $0, 9		#set $13 = '\t'
+			addi	$14, $0, 10		#set $14 = '\n'
+
+			addi	$15, $0, 81		#size of array line
+			la	$16, line		#starting address of line
+			add 	$16, $16, $10		#put i in line
+			lbu	$17, 0($16)		#line[i]
+
+			addi	$18, $0, 1	 	#set flag = 1
+			move    $21, $0			#set count = 0
+			move	$22, $0			#set max_world = 0
+			move	$23, $19		#user string
+
+
+
+
+	#for(i = 0; i < n; i++)
+	    #{
+	        #if((line[i] != ' ') && (line[i] != '\t') && (line[i] != '\n'))
+	          #{
+		   #count++;
+		  #}
+		#else if((line[i] == ' ') || (line[i] == '\t') || (line[i] == '\n'))
+		 #{
+		    #if(count > max_word)
+		     #{
+		        #max_word = count;
+		     #}
+		  #count = 0;
+		 #}
+	     #}
+
+loop4:			bge	$10, $11, end_loop4	#i >= n
+
+			beq	$17, $12, else_if5	#if(line[i] != ' ')
+			beq	$17, $13, else_if5	#if(line[i] != '\t')
+			beq	$17, $14, else_if5	#if(line[i] != '\n')
+			addi	$21, $21, 1		#count++
+			j	end_if5
+else_if5:		bgt	$21, $22,if6		#if(count > max_word)
+			j	end_if5
+if6:			move	$22, $21		#max_word = count
+			move	$21, $0			#set count = 0
+			j	end_if5
+end_if5:
+			addi	$10, $10, 1		#i++
+			addi	$16, $16, 1		
+			lbu	$17, 0($16)
+			j	loop4
+end_loop4:
+
+
+
+#print left_prompt
+			la	$a0, max_char_prompt 
+			li	$v0, 4			#to print string
+			syscall	
+#print count
+			move		$a0, $22		#to print int
+			li		$v0, 1			
+			syscall
+#print new_line
+		la		$a0, new_line		#to print string
+		li		$v0, 4			
+		syscall
+#Procedure call and stack
+		jal	 	min_char_function	#new procedure call
+		lw		$31, 4($sp)		#restore $31 from stack(pop)
+		addi 		$sp, $sp, 4	
+		jr		$31
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#min_char_function
+			.data		
+min_char_prompt:	.asciiz "Minimum length of a word: "
+
+			.text
+min_char_function:	sw	$31, 0($sp)		#saving $31 on stack(push)
+			addi	$sp, $sp, -4
+
+
+			move	$10, $0			#set i = 0
+			addi	$11, $0, 81		#set n = 80
+
+			addi	$12, $0, 32		#set $12 = ' '
+			addi	$13, $0, 9		#set $13 = '\t'
+			addi	$14, $0, 10		#set $14 = '\n'
+
+			addi	$15, $0, 81		#size of array line
+			la	$16, line		#starting address of line
+			add 	$16, $16, $10		#put i in line
+			lbu	$17, 0($16)		#line[i]
+
+			addi	$18, $0, 1	 	#set flag = 1
+			move    $21, $0			#set count = 0
+			addi	$22, $0, 80		#set min_world = 81
+
+
+
+
+	#min_word = 81;
+	#for(i = 0; i < n; i++)
+	    #{
+	        #if((line[i] != ' ') && (line[i] != '\t') && (line[i] != '\n'))
+	          #{
+		   #count++;
+		  #}
+		#else if((line[i] == ' ') || (line[i] == '\t') || (line[i] == '\n'))
+		 #{
+		    #if(count < min_word)
+		     #{
+		        #min_word = count;
+		     #}
+		  #count = 0;
+		 #}
+	     #}
+
+
+
+
+loop5:			bge	$10, $11, end_loop5	#i >= n
+
+			beq	$17, $12, else_if7	#if(line[i] != ' ')
+			beq	$17, $13, else_if7	#if(line[i] != '\t')
+			beq	$17, $14, else_if7	#if(line[i] != '\n')
+			addi	$21, $21, 1		#count++
+			j	end_if7
+else_if7:		blt	$21, $22,if8		#if(count < min_word)
+			j	end_if7
+if8:			move	$22, $21		#min_word = count
+			move	$21, $0			#set count = 0
+			j	end_if7
+end_if7:
+			addi	$10, $10, 1		#i++
+			addi	$16, $16, 1		
+			lbu	$17, 0($16)
+			j	loop5
+end_loop5:
+
+
+
+
+
+#print left_prompt
+			la	$a0, min_char_prompt 
+			li	$v0, 4			#to print string
+			syscall	
+#print count
+			move	$a0, $22		#to print int
+			li	$v0, 1			
+			syscall
+#print new_line
+			la	$a0, new_line		#to print string
+			li	$v0, 4			
+			syscall
+#Procedure call and stack
+			jal	max_word_function	#new procedure call
+			lw	$31, 4($sp)		#restore $31 from stack(pop)
+			addi 	$sp, $sp, 4	
+			jr	$31
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#max_word_function 
+			.data		
+max_word_prompt:	.asciiz "word of maximum length: "
+
+			.text
+max_word_function:	sw	$31, 0($sp)		#saving $31 on stack(push)
+			addi	$sp, $sp, -4
+
+			move	$10, $0			#set i = 0
+			addi	$11, $0, 80		#set n = 80
+		
+		#space, tab, new line
+			addi	$12, $0, 32		#set $12 = ' '
+			addi	$13, $0, 9		#set $13 = '\t'
+			addi	$14, $0, 10		#set $14 = '\n'
+
+		#line
+			addi	$15, $0, 80		#size of array line
+			la	$16, line		#starting address of line
+			add 	$16, $16, $10		#put i in line
+			lbu	$17, 0($16)		#line[i]
+		
+			addi	$18, $0, 1	 	#set flag = 1
+			move    $21, $0			#set count = 0
+			move	$22, $0			#set max_world = 0
+			move	$23, $19		#user string
+
+	
+
+
+
+	#for(i = 0; i < n; i++)
+	    #{
+	        #if((line[i] != ' ') && (line[i] != '\t') && (line[i] != '\n'))
+	          #{
+		   #line2[i] = line[i];
+		   #count++;
+		  #}
+		#else if((line[i] == ' ') || (line[i] == '\t') || (line[i] == '\n'))
+		 #{
+		    #if(count > max_word)
+		     #{
+			#line3[i] = line2[i];
+		        #max_word = count;
+		     #}
+		  #count = 0;
+		 #}
+	     #}
+
+
+loop6:			bge	$10, $11, end_loop6	#i >= n
+
+			beq	$17, $12, else_if9	#if(line[i] != ' ')
+			beq	$17, $13, else_if9	#if(line[i] != '\t')
+			beq	$17, $14, else_if9	#if(line[i] != '\n')
+			addi	$21, $21, 1		#count++
+			#move	$26, $17		#line2[i] = line[i]
+			j	end_if9
+else_if9:		blt	$21, $22,if10		#if(count < min_word)
+			j	end_if9
+if10:			move	$22, $21		#min_word = count
+			#move   29, $26
+			move	$21, $0			#set count = 0
+			j	end_if9
+end_if9:
+			addi	$10, $10, 1		#i++
+			addi	$16, $16, 1		
+			lbu	$17, 0($16)
+			j	loop6
+end_loop6:
+
+
+#print left_prompt
+			la	$a0, max_word_prompt 
+			li	$v0, 4			#to print string
+			syscall
+
+
+			
+			#la		$a0,line
+			#li		$v0,4
+			#syscall	
+
+			
+
+#print new_line
+		la		$a0, new_line		#to print string
+		li		$v0, 4			
+		syscall
+#Procedure call and stack
+		jal	 	min_word_function	#new procedure call
+		lw		$31, 4($sp)		#restore $31 from stack(pop)
+		addi 		$sp, $sp, 4	
+		jr		$31
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#max_word_function 
+			.data		
+min_word_prompt:	.asciiz "Word of minimum length: "
+
+			.text
+min_word_function:	sw	$31, 0($sp)		#saving $31 on stack(push)
+			addi	$sp, $sp, -4
+
+			move	$10, $0			#set i = 0
+			addi	$11, $0, 80		#set n = 80
+		
+		#space, tab, new line
+			addi	$12, $0, 32		#set $12 = ' '
+			addi	$13, $0, 9		#set $13 = '\t'
+			addi	$14, $0, 10		#set $14 = '\n'
+
+		#line
+			addi	$15, $0, 80		#size of array line
+			la	$16, line		#starting address of line
+			add 	$16, $16, $10		#put i in line
+			lbu	$17, 0($16)		#line[i]
+		
+			addi	$18, $0, 1	 	#set flag = 1
+			move    $21, $0			#set count = 0
+			move	$22, $0			#set max_world = 0
+			move	$23, $19		#user string
+
+	
+
+
+
+	#for(i = 0; i < n; i++)
+	    #{
+	        #if((line[i] != ' ') && (line[i] != '\t') && (line[i] != '\n'))
+	          #{
+		   #line2[i] = line[i];
+		   #count++;
+		  #}
+		#else if((line[i] == ' ') || (line[i] == '\t') || (line[i] == '\n'))
+		 #{
+		    #if(count < min_word)
+		     #{
+			#line3[i] = line2[i];
+		        #max_word = count;
+		     #}
+		  #count = 0;
+		 #}
+	     #}
+
+
+loop7:			bge	$10, $11, end_loop7	#i >= n
+
+			beq	$17, $12, else_if11	#if(line[i] != ' ')
+			beq	$17, $13, else_if11	##if(line[i] != '\t')
+			beq	$17, $14, else_if11	#if(line[i] != '\n')
+			addi	$21, $21, 1		#count++
+			#move	$26, $17		#line2[i] = line[i]
+			j	end_if11
+else_if11:		blt	$21, $22,if12		#if(count < min_word)
+			j	end_if11
+if12:			move	$22, $21		#min_word = count
+			#move   29, $26
+			move	$21, $0			#set count = 0
+			j	end_if11
+end_if11:
+			addi	$10, $10, 1		#i++
+			addi	$16, $16, 1		
+			lbu	$17, 0($16)
+			j	loop7
+end_loop7:
+
+
+#print left_prompt
+			la	$a0, min_word_prompt 
+			li	$v0, 4			#to print string
+			syscall
+
+			
+			#la		$a0,line
+			#li		$v0,4
+			#syscall	
+
+			
+
+#print new_line
+		la		$a0, new_line		#to print string
+		li		$v0, 4			
+		syscall
+#Procedure call and stack
+		lw		$31, 4($sp)		#restore $31 from stack(pop)
+		addi 		$sp, $sp, 4	
+		jr		$31
+

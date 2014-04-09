@@ -1,0 +1,250 @@
+#Ikhlas Ahmed
+#ia787858
+#Chris 
+#Lab: 10:30am - 11:30am 
+
+		.data
+prompt:		.asciiz "Positive integer? "
+right_prompt:	.asciiz "No. of 1's in the right half = "
+left_prompt:	.asciiz "No. of 0's in the left half  = "
+power_prompt:	.asciiz "Largest power of 2           = "
+decimal_prompt:	.asciiz "Largest decimal digit        = "
+new_line:	.asciiz "\n"
+
+
+
+		.text
+		.globl main
+
+#Prompt the user for an integer
+main:		la		$a0, prompt		#print string	
+		li		$v0, 4
+ 		syscall	
+
+#Read the integer
+		li		$v0, 5			#store the value in $v0
+		syscall
+
+
+
+
+
+# $13 =  int user    
+# $14 =  int mask   = 1 //0000 0001
+# $15 =  int i      = 0
+# $16 =  int n1     = 16
+# $17 =  int n2     = 31 	 
+# $18 =  int count  = 0
+		move		$13, $v0		#int $13 = $vo
+		addi		$14, $0, 1		#int mask = 1
+		move 		$15, $0			#int i = 0
+		addi		$16, $0, 16		#int n1 = 16
+		addi		$17, $0, 32		#int n2 = 31
+		move		$18, $0			#int count = 0
+
+
+#No. of 1's in the right half
+	#int mask = 1; //0000 0001
+	#int count = 0;
+	#for(int i = 0; i < n1; i++)
+		#if(($13 & mask) != 0)
+		#{
+			#count++;
+		#}
+	#mask = mask << 1
+
+		
+loop1:		bgt		$15, $16, end_loop1	#i > 16
+
+		and 		$12, $13, $14		#$12 = $13 & mask
+		bne		$12, $0, then1		#if($12 != 0)
+		j		end_if1
+then1:		addi 		$18, $18, 1		#count++
+end_if1:		
+	
+		sll		$14, $14, 1		#mask = mask << 1
+
+		addi		$15, $15, 1		#i++
+		j		loop1
+end_loop1:
+
+#print righ_prompt
+		la		$a0, right_prompt
+		li		$v0, 4			#to print string
+		syscall
+#print count  
+		move		$a0, $18		
+		li		$v0, 1			#to print int
+		syscall
+#print new_line
+		la		$a0, new_line
+		li		$v0, 4			#to print string
+		syscall
+
+
+
+
+
+
+
+
+
+#No. of 0's in the left half                  
+	#int mask = 1; // 0000 0001            | $14 = mask
+	#for(int i = 0; i < n2; i++)           | $15 = i
+		#if((read & mask) == 0)        | $17 = n2
+		#{			       | $18 = count
+		  #count++;
+		#}
+	#mask = mask << 1;
+	
+
+
+		move		$19, $13		#int $19 = $v0
+		move		$18, $0			#set count back to 0
+
+loop2:		bgt		$15, $17, end_loop2	#i > n2
+
+		and		$12, $19, $14		#int $12 = $19 & mask 
+		beq		$12, $0, then2		#if($12 == 0)
+		j		end_if2
+then2:		addi		$18, $18, 1		#count++
+end_if2:
+
+		sll		$14, $14, 1	    	# mask = mask << 1
+
+		addi		$15, $15, 1		#i++
+		j		loop2
+end_loop2:
+
+#print left_prompt
+		la		$a0, left_prompt	
+		li		$v0, 4			#to print string
+		syscall
+#print count
+		move		$a0, $18
+		li		$v0, 1			#to print int
+		syscall
+#print new_line
+		la		$a0, new_line		#to print string
+		li		$v0, 4
+		syscall
+		
+
+
+
+
+
+
+
+
+
+
+
+
+#Largest power of 2 
+       	#for(i = 0; i < n2; i++)              | $14 = mask
+	 #{                                   | $15 = i
+  	    #while((read & mask) == 0)        | $17 = n2
+  	    #{                                | $18 = count
+   	      #count++;
+  	    #}
+ 	  #mask = mask << 1;
+        #}
+
+
+		move		$20, $13		#int $20 = $13
+		move		$18, $0			#set count = 0
+                move            $15,$0 			#set i = 0
+                li              $14, 1			#set mask = 1
+                li              $17, 32			#set n2 = 32
+ 
+loop3: 		bge		$15, $17, end_loop3   	#i > n2
+		and		$12, $20, $14	        #read & mask
+
+loop4:		bne		$12, $0, end_loop3      #$12 != 0 
+		addi		$18, $18, 1		#count++
+end_loop4:
+
+		sll		$14, $14, 1		#mask = mask << 1
+
+		addi		$15, $15, 1		#i++		
+		j		loop3
+end_loop3:
+						
+#print power_prompt
+		la		$a0, power_prompt
+		li		$v0, 4			#to print string
+		syscall
+#print count
+		move		$a0, $18
+		li		$v0, 1			#to print int
+		syscall
+#print new_line
+		la		$a0, new_line
+		li		$v0, 4			#to print string
+		syscall
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Largest decimal digit
+   #user = quo;
+   #while(quo != 0)
+      #{
+        #rem = quo % 10;
+ 	#quo = quo / 10;
+	#if(rem > max_rem)
+	#{
+	  #max_rem = rem;
+	#}
+      #}
+		move		$21, $13		#int $21 = $v0
+		move		$22, $0			#int max_rem = 0
+		move 		$23, $0			#int quo = 0
+		move		$24, $0			#int rem = 0
+		move		$23, $21		#quo = $21
+		addi		$25, $0, 10		#int $25 = 10 // to div
+
+loop5:		beq		$23, $0, end_loop5	#quo == 0
+		
+
+		rem		$24, $23, $25		#rem = quo % 10
+		div		$23, $23, $25		#quo = quo / 10
+		bgt		$24, $22, if4		#if(rem > max_rem)
+		j		end_if4
+if4:		move		$22, $24		#max_rem = rem
+end_if4:
+
+		j		loop5
+end_loop5:
+
+
+	
+#print decimal_prompt
+		la		$a0, decimal_prompt
+		li		$v0, 4			#to print string
+		syscall
+#print max_rem
+		move		$a0, $22
+		li		$v0, 1			#to print int
+		syscall
+#print new_line
+		la		$a0, new_line
+		li		$v0, 4			#to print string
+		syscall
+
+		
+#Exit command
+		li		$v0, 10			#exit command
+		syscall
+		

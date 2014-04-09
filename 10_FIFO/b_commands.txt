@@ -1,0 +1,13 @@
+	addc Hanks,Tom		404
+	addc Martin,Stever	310
+	drpc Baker,Norma	311
+	wdrw Allen,Woody
+	wdrw Allen,Tim
+	tcre Roberts,Julia
+	newc 424  3  MWF--9:15-10:10
+	csch 310  MWF--1:25-2:20
+	ccre 402  4
+	gsch 445
+	gsch 426
+	gcre 446
+	gcre 402

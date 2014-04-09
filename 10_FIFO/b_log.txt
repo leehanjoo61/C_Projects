@@ -1,0 +1,13 @@
+0  addc  1  
+1  addc  1  
+2  drpc  1  
+3  wdrw  1  
+4  wdrw  0  
+5  tcre  1  3
+6  newc  1  
+7  csch  1  
+8  ccre  1  
+9  gsch  1  T--4:15-7:15
+10  gsch  0  Error
+11  gcre  0  -1
+12  gcre  1  4
